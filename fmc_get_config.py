@@ -15,6 +15,7 @@ import getpass
 from urllib3.exceptions import InsecureRequestWarning
 from typing import Dict, List, Optional, Any
 import time
+import os
 
 # Disable SSL warnings for self-signed certificates
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
@@ -1328,11 +1329,17 @@ def main():
     print("Cisco Firepower Management Center API v10.0")
     print("=" * 80)
     
-    # Get FMC connection details from user
+    # Get FMC connection details environment or from user
     print("\n[*] Enter FMC connection details:")
-    fmc_host = input("FMC IP Address or Hostname: ").strip()
-    username = input("API Username: ").strip()
-    password = getpass.getpass("API Password: ")
+    fmc_host = os.getenv("FMC_HOST")
+    if not fmc_host:
+        fmc_host = input("FMC IP Address or Hostname: ").strip()
+    username = os.getenv("FMC_USERNAME")
+    if not username:
+        username = input("API Username: ").strip()
+    password = os.getenv("FMC_PASSWORD")
+    if not password:
+        password = getpass.getpass("API Password: ")
     
     # Authenticate
     authenticator = FMCAuthenticator(fmc_host, username, password)
